@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/gif">
+        <file>defback.gif</file>
+    </qresource>
+    <qresource prefix="/saves"/>
+</RCC>
