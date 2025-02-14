@@ -27,7 +27,7 @@ protected:
     }
 
 private slots:
-    void on_background_linkActivated(const QString &link);
+    void on_aboutbutton_clicked();
 
 private:
     Ui::MainWindow *ui;

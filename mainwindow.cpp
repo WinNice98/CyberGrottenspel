@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "about.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,10 +22,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-
-void MainWindow::on_background_linkActivated(const QString &link)
+void MainWindow::on_aboutbutton_clicked()
 {
-
+    about *window = new about(this);
+    window->show();
 }
 
