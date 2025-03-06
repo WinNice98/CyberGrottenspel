@@ -9,3 +9,4 @@ echo "*.obj" >> .gitignore
 echo "*.so" >> .gitignore
 echo "*.dll" >> .gitignore
 echo "*.exe" >> .gitignore
+echo "*.user" >> .gitignore
