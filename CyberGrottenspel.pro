@@ -15,6 +15,7 @@ SOURCES += \
 
 HEADERS += \
     about.h \
+    game.h \
     mainwindow.h
 
 FORMS += \
