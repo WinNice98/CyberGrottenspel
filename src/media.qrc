@@ -4,5 +4,7 @@
         <file>thanks.gif</file>
     </qresource>
     <qresource prefix="/saves"/>
-    <qresource prefix="/"/>
+    <qresource prefix="/img">
+        <file>august_hart.jpg</file>
+    </qresource>
 </RCC>

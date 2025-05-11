@@ -50,10 +50,6 @@ public:
         }
         return max_hp;
     }
-    void recalc_after_lvlup(int level){
-        hp = max_health(level);
-        xp = max_health(level) * 3 - abs(xp);
-    }
     void change_health(int armour, int damage){
         if (armour <= damage){
             hp = hp - damage + armour;
@@ -61,14 +57,42 @@ public:
         stamina--;
         sleep--;
     }
+    void change_xp (int count){
+        xp = count;
+    }
+    int whats_xp(){
+        return xp;
+    }
+    void change_hp(int health){
+        hp = health;
+    }
 };
 
-class player{
+class enemy{
+    QString name;
+
+};
+
+class player:health{
     QString name;
     int level = 1;
     int money = 200;
     item inventory[50];
 public:
+    void add_money(int mon){
+        money = money + mon;
+    }
+    bool is_enough(int cost){
+        if (money >= cost){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    void recalc_after_lvlup(){
+        change_hp(max_health(level));
+        change_xp(max_health(level) * 3 - abs(whats_xp()));
+    }
 
 };
 

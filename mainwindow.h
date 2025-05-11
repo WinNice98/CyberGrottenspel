@@ -17,6 +17,10 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void set_control_mode(bool dialog);
+    void set_background(int id);
+    void set_character(int id);
+    void add_to_str(QString text);
     ~MainWindow();
 
 protected:
