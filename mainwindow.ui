@@ -622,7 +622,14 @@
        </sizepolicy>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="3" column="0">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="loadbutton">
+         <property name="text">
+          <string>Загрузить игру</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
         <widget class="QPushButton" name="aboutbutton">
          <property name="text">
           <string>О программе</string>
@@ -636,10 +643,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="loadbutton">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="f1button">
          <property name="text">
-          <string>Загрузить игру</string>
+          <string>Справка</string>
          </property>
         </widget>
        </item>
@@ -647,6 +654,13 @@
         <widget class="QPushButton" name="newgamebutton">
          <property name="text">
           <string>Начать новую игру</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Сохранить игру</string>
          </property>
         </widget>
        </item>

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMovie>
 #include <QResizeEvent>
+#include "game.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,6 +22,9 @@ public:
     void set_background(int id);
     void set_character(int id);
     void add_to_str(QString text);
+    player current_player;
+    void set_unactive();
+    void set_active();
     ~MainWindow();
 
 protected:
@@ -32,6 +36,12 @@ protected:
 
 private slots:
     void on_aboutbutton_clicked();
+
+    void on_loadbutton_clicked();
+
+    void on_f1button_clicked();
+
+    void on_newgamebutton_clicked();
 
 private:
     Ui::MainWindow *ui;

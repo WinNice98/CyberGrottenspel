@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 #include <QString>
+#include <QStringList>
+
 class item{
     int id;
     QString name;
@@ -66,6 +68,13 @@ public:
     void change_hp(int health){
         hp = health;
     }
+    void change_stamina(int input_stamina){
+        stamina = input_stamina;
+    }
+    void change_sleep(int input_sleep){
+        sleep = input_sleep;
+    }
+
 };
 
 class enemy{
@@ -79,8 +88,23 @@ class player:health{
     int money = 200;
     item inventory[50];
 public:
+    void load(QString input_name, int input_level, int input_money, item input_inventory[50], int input_hp, int input_stamina, int input_xp, int input_sleep){
+        name = input_name;
+        money = input_money;
+        level = input_level;
+        for(int i = 0; i < 50; i++){
+            //inventory[i] = input_inventory[i];
+        }
+        change_hp(input_hp);
+        change_sleep(input_sleep);
+        change_stamina(input_stamina);
+        change_xp(input_xp);
+    }
     void add_money(int mon){
         money = money + mon;
+    }
+    void set_name(QString input_name){
+        name = input_name;
     }
     bool is_enough(int cost){
         if (money >= cost){
@@ -93,7 +117,9 @@ public:
         change_hp(max_health(level));
         change_xp(max_health(level) * 3 - abs(whats_xp()));
     }
-
+    QString stats(){
+        return name;
+    }
 };
 
 #endif // GAME_H
