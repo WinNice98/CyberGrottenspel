@@ -7,6 +7,8 @@
 #include <QSqlError>
 #include <QItemSelectionModel>
 #include <QMessageBox>
+#include <QSqlQuery>
+#include <QTextStream>
 
 load_game::load_game(QWidget *parent)
     : QDialog(parent)
@@ -41,8 +43,29 @@ void load_game::on_buttonBox_accepted()
         return;
     }
     int row = selected->selectedRows().first().row();
-    // name, level, money, items, hp, stamina, xp, sleep
+    // id, name, level, money, items, hp, stamina, xp, sleep, date
+    QString input_iventory = model->data(model->index(row, 4)).toString();
     item input_inv[50];
-    input_player.load(model->data(model->index(row, 0)).toString(), model->data(model->index(row,1)).toInt(), model->data(model->index(row,2)).toInt(), input_inv, model->data(model->index(row, 3)).toInt(), model->data(model->index(row,4)).toInt(),  model->data(model->index(row, 5)).toInt() , model->data(model->index(row, 6)).toInt());
+    for(int i = 0; i < 50; i++){
+        QTextStream stream(&input_iventory);
+        int id, durability, num, chosen_int;
+        stream >> id >> durability >> num >> chosen_int;
+        bool chosen;
+        if (chosen_int){
+            chosen = true;
+        } else {
+            chosen = false;
+        }
+        input_inv[i].set_item(id, durability, num, chosen);
+    }
+    int input_attitude[15], input_dialogs[15];
+    QString dialogs = model->data(model->index(row, 11)).toString(), attitude = model->data(model->index(row, 12)).toString();
+    QTextStream stream1(&dialogs);
+    QTextStream stream2(&attitude);
+    for(int i = 0; i < 15; i++){
+        stream1 >> dialogs[i];
+        stream2 >> attitude[i];
+    }
+    input_player.load(model->data(model->index(row, 1)).toString(), model->data(model->index(row,2)).toInt(), model->data(model->index(row,3)).toInt(), input_inv, model->data(model->index(row, 5)).toInt(), model->data(model->index(row,6)).toInt(),  model->data(model->index(row, 7)).toInt() ,model->data(model->index(row, 8)).toInt(), model->data(model->index(row, 10)).toInt(), input_dialogs, input_attitude);
 }
 

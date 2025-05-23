@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>858</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="palette">
    <palette>
@@ -497,8 +503,8 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>640</width>
-        <height>360</height>
+        <width>1008</width>
+        <height>446</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -517,8 +523,11 @@
        <bool>false</bool>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" rowspan="2" colspan="2">
+       <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="background">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>16</horstretch>
@@ -554,10 +563,53 @@
          </property>
         </widget>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="enemy">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>200</horstretch>
+           <verstretch>200</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="sizeIncrement">
+          <size>
+           <width>1</width>
+           <height>1</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>200</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
         <widget class="QLabel" name="character">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -573,8 +625,8 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>256</width>
-           <height>256</height>
+           <width>500</width>
+           <height>500</height>
           </size>
          </property>
          <property name="sizeIncrement">
@@ -594,17 +646,17 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="3" rowspan="2">
-     <widget class="QWidget" name="dialogs" native="true">
+    <item row="0" column="0" rowspan="5">
+     <widget class="QWidget" name="status" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
+      <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignTop">
-        <widget class="QLabel" name="text">
+        <widget class="QLabel" name="stats">
          <property name="text">
           <string>TextLabel</string>
          </property>
@@ -613,61 +665,7 @@
       </layout>
      </widget>
     </item>
-    <item row="2" column="3" rowspan="2">
-     <widget class="QWidget" name="menu" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="1" column="0">
-        <widget class="QPushButton" name="loadbutton">
-         <property name="text">
-          <string>Загрузить игру</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QPushButton" name="aboutbutton">
-         <property name="text">
-          <string>О программе</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="settingsbutton">
-         <property name="text">
-          <string>Параметры</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QPushButton" name="f1button">
-         <property name="text">
-          <string>Справка</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="newgamebutton">
-         <property name="text">
-          <string>Начать новую игру</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Сохранить игру</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="2" column="2" rowspan="2">
+    <item row="3" column="2" rowspan="2">
      <widget class="QWidget" name="control" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -679,17 +677,31 @@
        <item row="0" column="1">
         <widget class="QWidget" name="dialogmod" native="true">
          <layout class="QGridLayout" name="gridLayout_7">
-          <item row="1" column="0">
-           <widget class="QPushButton" name="var2">
-            <property name="text">
-             <string>Dialog 2</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QPushButton" name="var3">
             <property name="text">
              <string>Dialog 3</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QPushButton" name="var7">
+            <property name="text">
+             <string>Dialog 7</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QPushButton" name="var6">
+            <property name="text">
+             <string>Dialog 6</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QPushButton" name="var5">
+            <property name="text">
+             <string>Dialog 5</string>
             </property>
            </widget>
           </item>
@@ -700,10 +712,24 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="var2">
+            <property name="text">
+             <string>Dialog 2</string>
+            </property>
+           </widget>
+          </item>
           <item row="3" column="0">
            <widget class="QPushButton" name="var4">
             <property name="text">
              <string>Dialog 4</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QPushButton" name="changebutton">
+            <property name="text">
+             <string>back</string>
             </property>
            </widget>
           </item>
@@ -836,21 +862,80 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="4">
-     <widget class="QWidget" name="status" native="true">
+    <item row="3" column="3" rowspan="2">
+     <widget class="QWidget" name="menu" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignTop">
-        <widget class="QLabel" name="stats">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="loadbutton">
          <property name="text">
-          <string>TextLabel</string>
+          <string>Загрузить игру</string>
          </property>
         </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="aboutbutton">
+         <property name="text">
+          <string>О программе</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="settingsbutton">
+         <property name="text">
+          <string>Параметры</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QPushButton" name="f1button">
+         <property name="text">
+          <string>Справка</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="newgamebutton">
+         <property name="text">
+          <string>Начать новую игру</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Сохранить игру</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="3" rowspan="3">
+     <widget class="QWidget" name="dialogs" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>200</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QTextBrowser" name="text"/>
        </item>
       </layout>
      </widget>
