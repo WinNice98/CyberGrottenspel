@@ -387,30 +387,41 @@ void MainWindow::on_var1_clicked()
 
 void MainWindow::on_var2_clicked()
 {
-    connect_db();
-    if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 1){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("Последствие ответа: " + query.value("feelings").toString());
-                }
-                i++;
-            }
-        } else {
-            qDebug() << query.lastError().text();
-        }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(1);
+    if (current_player.whats_place() == 5){
+        set_background(8);
+        set_control_mode(false);
+        set_enemy(1);
     } else {
-        dialog_started = true;
-        show_dialogs(1);
+        if (current_player.whats_place() == 6){
+
+        } else {
+            connect_db();
+            if(dialog_started){
+                QSqlQuery query;
+                query.prepare("SELECT * FROM answers WHERE id = ?");
+                query.addBindValue(current_dialog_id);
+                if(query.exec()){
+                    int i = 0;
+                    while(query.next()){
+                        if(i == 1){
+                            current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                            add_text("Последствие ответа: " + query.value("feelings").toString());
+                        }
+                        i++;
+                    }
+                } else {
+                    qDebug() << query.lastError().text();
+                }
+                query.finish();
+                current_player.change_dialog(current_character_id);
+                show_dialogs(1);
+            } else {
+                dialog_started = true;
+                show_dialogs(1);
+            }
+        }
     }
+
 }
 
 void MainWindow::on_var3_clicked()

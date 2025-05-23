@@ -4,10 +4,12 @@
         <file>thanks.gif</file>
         <file>new_world.gif</file>
         <file>academy.gif</file>
+        <file>underground.gif</file>
     </qresource>
     <qresource prefix="/saves"/>
     <qresource prefix="/img">
         <file>august_hart.jpg</file>
+        <file>enemy1.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
