@@ -40,8 +40,9 @@ public:
     void set_dialog(int id);
     void show_dialogs(int place_id);
     bool dialog_started = false;
-    int current_dialog_id;
+    int current_character_max_dialogs;
     int current_character_id;
+    void check_final();
     ~MainWindow();
 
 protected:
@@ -80,6 +81,8 @@ private slots:
     void on_var7_clicked();
 
     void on_changebutton_clicked();
+
+    void on_settingsbutton_clicked();
 
 private:
     Ui::MainWindow *ui;

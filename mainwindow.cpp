@@ -5,6 +5,7 @@
 #include "save_game.h"
 #include "new_game.h"
 #include "information.h"
+#include "finalwindow.h"
 #include <QFile>
 #include <QTimer>
 
@@ -51,43 +52,105 @@ void MainWindow::show_dialogs(int place_id){
         connect_db();
         QSqlQuery query;
         if (dialog_started){
+            int character_id = place_id;
+            current_character_id = character_id;
+            query.prepare("SELECT * FROM dialogs WHERE character = ?");
+            query.addBindValue(character_id);
+            current_character_max_dialogs = 4;
+            if (query.exec()){
+                while(query.next()){
+                    if (query.value("dialog_number").toInt() == current_player.whats_dialog(character_id)){
+                        QString replica = query.value("text").toString();
+                        query.finish();
+                        query.prepare("SELECT * FROM characters WHERE id = ?");
+                        query.addBindValue(character_id);
+                        QString name;
+                        if(query.exec()){
+                            while(query.next()){
+                                name = query.value("name").toString();
+                                set_character(current_character_id);
+                                current_character_max_dialogs = query.value("max_dialogs").toInt();
+                            }
+                            query.finish();
+                        } else {
+                            qDebug() << "поиск имени персонажа для диалога неудачен: " << query.lastError().text();
+                        }
+                        add_text(name + ": " + replica);
+                    }
+                }
+            } else {
+                qDebug() << "поиск реплики в режиме показа диалога неудачен: " << query.lastError().text();
+            }
+            query.prepare("SELECT * FROM answers WHERE dialog =?");
+            query.addBindValue(current_player.whats_dialog(character_id));
+            if(query.exec()){
+                int i = 1;
+                while(query.next()){
+                    ui->dialogmod->findChild<QPushButton*>("var" + QString::number(i))->setText(query.value("text").toString());
+                    ui->dialogmod->findChild<QPushButton*>("var" + QString::number(i))->setHidden(false);
+                    i++;
+                }
+                if(i - 1 < 7){
+                    while (i < 8){
+                        ui->dialogmod->findChild<QPushButton*>("var" + QString::number(i))->setHidden(true);
+                        i++;
+                    }
+                    ui->changebutton->setHidden(true);
+                }
+            } else {
+                qDebug() << "ошибка в обращении к ответам по айди диалога: " << query.lastError().text();
+            }
+            /*
             query.prepare("SELECT * FROM dialogs WHERE character = ?");
             query.addBindValue(place_id);
             set_character(place_id);
-            int dialog_id;
+            qDebug() << "dialog started, search " << place_id << "character on dialogs";
+            int dialog_id  = -1;
             if(query.exec()){
-                int i = 0;
+                int i = 1;
                 while(query.next()){
+                    qDebug() << "founded charcter in dialogs: " << query.value("character").toInt();
+                    qDebug() << "founded dialog_id in dialogs" << query.value("id").toInt();
                     if (current_player.whats_dialog(place_id) == i){
                         QSqlQuery query2;
                         query2.prepare("SELECT * FROM characters WHERE id = ?");
                         query2.addBindValue(place_id);
+                        qDebug() << "dialog started, search " << place_id << "id on characters";
                         if(query2.exec()){
+                            qDebug() << "current id " << query.value("id").toInt();
+                            query2.next();
+                            qDebug() << "founded charcter in dialogs: " << query.value("character").toInt();
                             QString name = query2.value("name").toString();
                             add_text(name + ": " + query.value("text").toString());
                             query2.finish();
                             dialog_id = query.value("id").toInt();
+                            qDebug() << "current dialog_id in while: " << dialog_id;
                         } else {
                             qDebug() << "query2" << query2.lastError().text();
                         }
                         current_dialog_id = dialog_id;
+                        qDebug() << "dialog started, current dialog: " << dialog_id;
                         current_character_id = place_id;
+                        qDebug() << "dialog started, current character " << place_id;
                         query.finish();
                     }
                     i++;
                 }
-                if (i > 4){
+                if(dialog_id == -1) {
+                    qDebug() << "WORKING!";
                     dialog_started = false;
                     show_dialogs(current_player.whats_place());
                     set_character(-1);
                     ui->changebutton->setHidden(false);
                 }
             } else {
-                qDebug() << query.lastError().text();
+                qDebug() << "Подгрузка реплики на стр 86" << query.lastError().text();
             }
+
             query.finish();
             query.prepare("SELECT * FROM answers WHERE dialog = ?");
             query.addBindValue(dialog_id);
+            qDebug() << "dialog started, search " << dialog_id << "dialog on answers";
             if(query.exec()){
                 int j = 1;
                 while(query.next()){
@@ -103,11 +166,13 @@ void MainWindow::show_dialogs(int place_id){
                     ui->changebutton->setHidden(true);
                 }
             } else {
-                qDebug() << query.lastError().text();
+                qDebug() << "подгрузка ответов на стр 106" << query.lastError().text();
             }
+*/
         } else {
             query.prepare("SELECT * FROM characters WHERE place = ?");
             query.addBindValue(place_id);
+            qDebug() << "dialog not started, search " << place_id << "place on characters";
             if (query.exec()){
                 int i = 1;
                 while(query.next()){
@@ -123,7 +188,7 @@ void MainWindow::show_dialogs(int place_id){
                     ui->changebutton->setHidden(false);
                 }
             } else {
-                qDebug() << query.lastError().text();
+                qDebug() << "подгрузка персонажей на стр 126 " << query.lastError().text();
             }
             ui->changebutton->setText("Сменить локацию");
             set_control_mode(1);
@@ -163,7 +228,7 @@ void MainWindow::set_character(int id){
     if (query.exec() && query.next()) {
         path = query.value("image").toString();
     } else {
-        qDebug() << "[Изображение] Ошибка запроса или место не найдено:" << query.lastError().text();
+        qDebug() << "[Изображение character] Ошибка запроса или место не найдено:" << query.lastError().text();
     }
     QMovie *img = new QMovie(path);
     qDebug() << path;
@@ -195,9 +260,6 @@ void MainWindow::set_enemy(int id){
         this->resize(this->width() - 1, this->height() - 1);
     });
 }
-
-
-
 
 void MainWindow::add_text(QString input){
     ui->text->append(input);
@@ -284,6 +346,7 @@ void MainWindow::on_loadbutton_clicked()
         set_text("");
         int id = current_player.whats_place();
         set_background(id);
+        dialog_started = false;
     }
 }
 
@@ -334,10 +397,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->background->setAttribute(Qt::WA_TranslucentBackground);
     ui->enemy->setAttribute(Qt::WA_TranslucentBackground);
     set_background(5);
-    set_enemy(0);
     set_unactive();
     //ui->text->setWordWrap(true);
     ui->text->setFixedWidth(150);
+    ui->text->setFixedHeight(ui->display->height());
 }
 
 void MainWindow::on_var1_clicked()
@@ -360,27 +423,47 @@ void MainWindow::on_var1_clicked()
         }
         connect_db();
         if(dialog_started){
+            if (current_character_max_dialogs != current_player.whats_dialog(current_character_id)){
+                QSqlQuery query;
+                query.prepare("SELECT * FROM answers WHERE dialog = ?");
+                query.addBindValue(current_player.whats_dialog(current_character_id));
+                if(query.exec()){
+                    int i = 0;
+                    while(query.next()){
+                        if(i == 0){
+                            current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                            add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                        }
+                        i++;
+                    }
+                } else {
+                    qDebug() << "var1 " << query.lastError().text();
+                }
+                query.finish();
+                current_player.change_dialog(current_character_id);
+                show_dialogs(current_character_id);
+            } else {
+                dialog_started = false;
+                set_character(-1);
+                show_dialogs(current_player.whats_place());
+            }
+        } else {
+            dialog_started = true;
             QSqlQuery query;
-            query.prepare("SELECT * FROM answers WHERE id = ?");
-            query.addBindValue(current_dialog_id);
+            query.prepare("SELECT * FROM characters WHERE place = ?");
+            query.addBindValue(current_player.whats_place());
             if(query.exec()){
-                int i = 0;
+                int i = 1;
                 while(query.next()){
-                    if(i == 0){
-                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    if (i == 1){
+                        break;
                     }
                     i++;
                 }
+                show_dialogs(query.value("id").toInt());
             } else {
-                qDebug() << query.lastError().text();
+                qDebug() << "var 1 dialog not started: " << query.lastError().text();
             }
-            query.finish();
-            current_player.change_dialog(current_character_id);
-            show_dialogs(current_character_id);
-        } else {
-            dialog_started = true;
-            show_dialogs(0);
         }
     }
 }
@@ -397,27 +480,48 @@ void MainWindow::on_var2_clicked()
         } else {
             connect_db();
             if(dialog_started){
+                if (current_character_max_dialogs != current_player.whats_dialog(current_character_id)){
+                    QSqlQuery query;
+                    query.prepare("SELECT * FROM answers WHERE dialog = ?");
+                    query.addBindValue(current_player.whats_dialog(current_character_id));
+                    if(query.exec()){
+                        int i = 0;
+                        while(query.next()){
+                            if(i == 1){
+                                current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                                add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                            }
+                            i++;
+                        }
+                    } else {
+                        qDebug() << "var1 " << query.lastError().text();
+                    }
+                    query.finish();
+                    current_player.change_dialog(current_character_id);
+                    show_dialogs(current_character_id);
+                } else {
+                    dialog_started = false;
+                    set_character(-1);
+                    show_dialogs(current_player.whats_place());
+                }
+            } else {
+                dialog_started = true;
                 QSqlQuery query;
-                query.prepare("SELECT * FROM answers WHERE id = ?");
-                query.addBindValue(current_dialog_id);
+                query.prepare("SELECT * FROM characters WHERE place = ?");
+                query.addBindValue(current_player.whats_place());
                 if(query.exec()){
-                    int i = 0;
+                    int i = 1;
                     while(query.next()){
-                        if(i == 1){
-                            current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                            add_text("Последствие ответа: " + query.value("feelings").toString());
+                        if (i == 2){
+                            break;
                         }
                         i++;
                     }
+                    qDebug() << "загрузка диалога с персонажем под id = " << query.value("id").toInt();
+                    show_dialogs(query.value("id").toInt());
                 } else {
-                    qDebug() << query.lastError().text();
+                    qDebug() << "var 1 dialog not started: " << query.lastError().text();
                 }
-                query.finish();
-                current_player.change_dialog(current_character_id);
-                show_dialogs(1);
-            } else {
-                dialog_started = true;
-                show_dialogs(1);
             }
         }
     }
@@ -428,27 +532,46 @@ void MainWindow::on_var3_clicked()
 {
     connect_db();
     if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 2){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("Последствие ответа: " + query.value("feelings").toString());
+        if (current_character_max_dialogs <= current_player.whats_dialog(current_character_id)){
+            QSqlQuery query;
+            query.prepare("SELECT * FROM answers WHERE dialog = ?");
+            query.addBindValue(current_player.whats_dialog(current_character_id));
+            if(query.exec()){
+                int i = 0;
+                while(query.next()){
+                    if(i == 2){
+                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    }
+                    i++;
                 }
-                i++;
+            } else {
+                qDebug() << "var1 " << query.lastError().text();
             }
+            query.finish();
+            current_player.change_dialog(current_character_id);
+            show_dialogs(current_character_id);
         } else {
-            qDebug() << query.lastError().text();
+            dialog_started = false;
+            show_dialogs(current_player.whats_place());
         }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(2);
     } else {
         dialog_started = true;
-        show_dialogs(2);
+        QSqlQuery query;
+        query.prepare("SELECT * FROM characters WHERE place = ?");
+        query.addBindValue(current_player.whats_place());
+        if(query.exec()){
+            int i = 1;
+            while(query.next()){
+                i++;
+                if (i == 3){
+                    break;
+                }
+            }
+            show_dialogs(query.value("id").toInt());
+        } else {
+            qDebug() << "var 1 dialog not started: " << query.lastError().text();
+        }
     }
 }
 
@@ -457,27 +580,46 @@ void MainWindow::on_var4_clicked()
 {
     connect_db();
     if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 3){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("Последствие ответа: " + query.value("feelings").toString());
+        if (current_character_max_dialogs <= current_player.whats_dialog(current_character_id)){
+            QSqlQuery query;
+            query.prepare("SELECT * FROM answers WHERE dialog = ?");
+            query.addBindValue(current_player.whats_dialog(current_character_id));
+            if(query.exec()){
+                int i = 0;
+                while(query.next()){
+                    if(i == 3){
+                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    }
+                    i++;
                 }
-                i++;
+            } else {
+                qDebug() << "var1 " << query.lastError().text();
             }
+            query.finish();
+            current_player.change_dialog(current_character_id);
+            show_dialogs(current_character_id);
         } else {
-            qDebug() << query.lastError().text();
+            dialog_started = false;
+            show_dialogs(current_player.whats_place());
         }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(3);
     } else {
         dialog_started = true;
-        show_dialogs(3);
+        QSqlQuery query;
+        query.prepare("SELECT * FROM characters WHERE place = ?");
+        query.addBindValue(current_player.whats_place());
+        if(query.exec()){
+            int i = 1;
+            while(query.next()){
+                i++;
+                if (i == 4){
+                    break;
+                }
+            }
+            show_dialogs(query.value("id").toInt());
+        } else {
+            qDebug() << "var 1 dialog not started: " << query.lastError().text();
+        }
     }
 }
 
@@ -486,27 +628,46 @@ void MainWindow::on_var5_clicked()
 {
     connect_db();
     if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 4){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("Последствие ответа: " + query.value("feelings").toString());
+        if (current_character_max_dialogs <= current_player.whats_dialog(current_character_id)){
+            QSqlQuery query;
+            query.prepare("SELECT * FROM answers WHERE dialog = ?");
+            query.addBindValue(current_player.whats_dialog(current_character_id));
+            if(query.exec()){
+                int i = 0;
+                while(query.next()){
+                    if(i == 4){
+                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    }
+                    i++;
                 }
-                i++;
+            } else {
+                qDebug() << "var1 " << query.lastError().text();
             }
+            query.finish();
+            current_player.change_dialog(current_character_id);
+            show_dialogs(current_character_id);
         } else {
-            qDebug() << query.lastError().text();
+            dialog_started = false;
+            show_dialogs(current_player.whats_place());
         }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(4);
     } else {
         dialog_started = true;
-        show_dialogs(4);
+        QSqlQuery query;
+        query.prepare("SELECT * FROM characters WHERE place = ?");
+        query.addBindValue(current_player.whats_place());
+        if(query.exec()){
+            int i = 1;
+            while(query.next()){
+                i++;
+                if (i == 5){
+                    break;
+                }
+            }
+            show_dialogs(query.value("id").toInt());
+        } else {
+            qDebug() << "var 1 dialog not started: " << query.lastError().text();
+        }
     }
 }
 
@@ -515,27 +676,46 @@ void MainWindow::on_var6_clicked()
 {
     connect_db();
     if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 5){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("\n\nПоследствие ответа: " + query.value("feelings").toString());
+        if (current_character_max_dialogs <= current_player.whats_dialog(current_character_id)){
+            QSqlQuery query;
+            query.prepare("SELECT * FROM answers WHERE dialog = ?");
+            query.addBindValue(current_player.whats_dialog(current_character_id));
+            if(query.exec()){
+                int i = 0;
+                while(query.next()){
+                    if(i == 5){
+                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    }
+                    i++;
                 }
-                i++;
+            } else {
+                qDebug() << "var1 " << query.lastError().text();
             }
+            query.finish();
+            current_player.change_dialog(current_character_id);
+            show_dialogs(current_character_id);
         } else {
-            qDebug() << query.lastError().text();
+            dialog_started = false;
+            show_dialogs(current_player.whats_place());
         }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(5);
     } else {
         dialog_started = true;
-        show_dialogs(5);
+        QSqlQuery query;
+        query.prepare("SELECT * FROM characters WHERE place = ?");
+        query.addBindValue(current_player.whats_place());
+        if(query.exec()){
+            int i = 1;
+            while(query.next()){
+                i++;
+                if (i == 6){
+                    break;
+                }
+            }
+            show_dialogs(query.value("id").toInt());
+        } else {
+            qDebug() << "var 1 dialog not started: " << query.lastError().text();
+        }
     }
 }
 
@@ -544,34 +724,89 @@ void MainWindow::on_var7_clicked()
 {
     connect_db();
     if(dialog_started){
-        QSqlQuery query;
-        query.prepare("SELECT * FROM answers WHERE id = ?");
-        query.addBindValue(current_dialog_id);
-        if(query.exec()){
-            int i = 0;
-            while(query.next()){
-                if(i == 6){
-                    current_player.change_attitude(current_character_id, query.value("attitude").toInt());
-                    add_text("Последствие ответа: " + query.value("feelings").toString());
+        if (current_character_max_dialogs <= current_player.whats_dialog(current_character_id)){
+            QSqlQuery query;
+            query.prepare("SELECT * FROM answers WHERE dialog = ?");
+            query.addBindValue(current_player.whats_dialog(current_character_id));
+            if(query.exec()){
+                int i = 0;
+                while(query.next()){
+                    if(i == 6){
+                        current_player.change_attitude(current_character_id, query.value("attitude").toInt());
+                        add_text("\n\nПоследствие ответа: " + query.value("feelings").toString() + "\n\n");
+                    }
+                    i++;
                 }
-                i++;
+            } else {
+                qDebug() << "var1 " << query.lastError().text();
             }
+            query.finish();
+            current_player.change_dialog(current_character_id);
+            show_dialogs(current_character_id);
         } else {
-            qDebug() << query.lastError().text();
+            dialog_started = false;
+            show_dialogs(current_player.whats_place());
         }
-        query.finish();
-        current_player.change_dialog(current_character_id);
-        show_dialogs(6);
     } else {
         dialog_started = true;
-        show_dialogs(6);
+        QSqlQuery query;
+        query.prepare("SELECT * FROM characters WHERE place = ?");
+        query.addBindValue(current_player.whats_place());
+        if(query.exec()){
+            int i = 1;
+            while(query.next()){
+                i++;
+                if (i == 7){
+                    break;
+                }
+            }
+            show_dialogs(query.value("id").toInt());
+        } else {
+            qDebug() << "var 1 dialog not started: " << query.lastError().text();
+        }
     }
 }
 
+void MainWindow::check_final(){
+    connect_db();
+    QSqlQuery query;
+    query.prepare("SELECT * FROM characters WHERE id = ?");
+    int i = 0;
+    query.addBindValue(i);
+    bool final = true;
+    if(query.exec()){
+        while(query.next()){
+            int current_max_dialogs = query.value("max_dialogs").toInt();
+            /*
+            if(current_player.whats_dialog(i) == current_max_dialogs){
+            } else {
+                final = false;
+            }
+            */
+            i++;
+        }
+        if(final){
+            FinalWindow *window = new FinalWindow;
+            window->set_final(1);
+            window->exec();
+            if(window->clicked){
+                set_unactive();
+            }
+        }
+    } else {
+        qDebug() << "check final error: " << query.lastError().text();
+    }
+}
 
 void MainWindow::on_changebutton_clicked()
 {
     current_player.change_place();
     set_background(current_player.whats_place());
+}
+
+
+void MainWindow::on_settingsbutton_clicked()
+{
+    check_final();
 }
 

@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     about.cpp \
+    finalwindow.cpp \
     information.cpp \
     load_game.cpp \
     main.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     about.h \
+    finalwindow.h \
     game.h \
     information.h \
     load_game.h \
@@ -29,6 +31,7 @@ HEADERS += \
 
 FORMS += \
     about.ui \
+    finalwindow.ui \
     information.ui \
     load_game.ui \
     mainwindow.ui \

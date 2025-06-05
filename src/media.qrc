@@ -5,6 +5,11 @@
         <file>new_world.gif</file>
         <file>academy.gif</file>
         <file>underground.gif</file>
+        <file>final4.gif</file>
+        <file>final5.gif</file>
+        <file>final3.gif</file>
+        <file>final2.gif</file>
+        <file>final1.gif</file>
     </qresource>
     <qresource prefix="/saves"/>
     <qresource prefix="/img">

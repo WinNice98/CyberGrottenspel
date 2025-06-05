@@ -148,8 +148,8 @@ class player:public health{
     int money = 200;
     item inventory[50];
     int place = 5;
-    int attitude[15];
-    int dialogs[15];
+    int attitude[16];
+    int dialogs[16];
 public:
     void load(QString input_name, int input_level, int input_money, item input_inventory[50], int input_hp, int input_stamina, int input_xp, int input_sleep, int input_place, int input_attitude[5], int input_dialogs[5]){
         name = input_name;
@@ -163,7 +163,7 @@ public:
         change_stamina(input_stamina);
         change_xp(input_xp);
         place = input_place;
-        for(int i = 0; i < 15; i++){
+        for(int i = 0; i < 16; i++){
             attitude[i] = input_attitude[i];
             dialogs[i] = input_dialogs[i];
         }
@@ -200,11 +200,22 @@ public:
     int whats_dialog(int id){
         return dialogs[id];
     }
-    int whats_attitude(int id){
-        return attitude[id];
-    }
     void change_attitude(int id, int input){
         attitude[id] = attitude[id] + input;
+    }
+    int whats_attitude(int group_id){
+        if (group_id == 0){
+            return attitude[0] + attitude[5] + attitude[13] + attitude[14] + attitude[15];
+        } // neutral
+        if (group_id == 1){
+            return attitude[2] + attitude[3] + attitude[7] + attitude[8] + attitude[9];
+        } // traditional
+        if (group_id == 2){
+            return attitude[4] + attitude[6] + attitude[1];
+        } // mecha
+        if (group_id == 3){
+            return attitude[10] + attitude[11] + attitude[12];
+        } // corporation
     }
     void change_dialog(int id){
         dialogs[id] = dialogs[id] + 1;
